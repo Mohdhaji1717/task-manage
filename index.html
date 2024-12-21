@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin: 5px 0;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+    }
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+    button {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Task Manager App</h1>
+  <input type="text" id="taskInput" placeholder="Enter a task" />
+  <button id="addTaskBtn">Add Task</button>
+  <ul id="taskList"></ul>
+
+  <script>
+    // Task Manager Logic
+    class TaskManager {
+      constructor() {
+        this.tasks = [];
+        this.taskListElement = document.getElementById("taskList");
+      }
+
+      // Add a new task
+      addTask(taskName) {
+        if (!taskName.trim()) return alert("Task cannot be empty!");
+
+        const newTask = {
+          id: Date.now(), // Unique ID for the task
+          name: taskName,
+          completed: false,
+        };
+
+        this.tasks = [...this.tasks, newTask]; // Use spread operator
+        this.renderTasks();
+      }
+
+      // Toggle task completion
+      toggleTask(taskId) {
+        this.tasks = this.tasks.map(task =>
+          task.id === taskId ? { ...task, completed: !task.completed } : task
+        );
+        this.renderTasks();
+      }
+
+      // Delete a task
+      deleteTask(taskId) {
+        this.tasks = this.tasks.filter(task => task.id !== taskId); // Use filter
+        this.renderTasks();
+      }
+
+      // Render tasks to the DOM
+      renderTasks() {
+        this.taskListElement.innerHTML = ""; // Clear the list
+        this.tasks.forEach(({ id, name, completed }) => {
+          // Use destructuring and template literals
+          const taskElement = document.createElement("li");
+          taskElement.className = `task ${completed ? "completed" : ""}`;
+          taskElement.innerHTML = `
+            <span>${name}</span>
+            <div>
+              <button onclick="taskManager.toggleTask(${id})">${
+            completed ? "Undo" : "Complete"
+          }</button>
+              <button onclick="taskManager.deleteTask(${id})">Delete</button>
+            </div>
+          `;
+          this.taskListElement.appendChild(taskElement);
+        });
+      }
+    }
+
+    // Initialize Task Manager
+    const taskManager = new TaskManager();
+
+    // Add Task Button Event Listener
+    document.getElementById("addTaskBtn").addEventListener("click", () => {
+      const taskInput = document.getElementById("taskInput");
+      taskManager.addTask(taskInput.value);
+      taskInput.value = ""; // Clear input field
+    });
+  </script>
+</body>
+</html>
